@@ -1,0 +1,72 @@
+// RidgeClimb Adventures — Prisma Schema
+// Run `npx prisma migrate dev` after configuring DATABASE_URL in .env
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Expedition {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  description String
+  difficulty  Difficulty
+  duration    String
+  price       Float
+  imageUrl    String
+  featured    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  bookings    Booking[]
+
+  @@map("expeditions")
+}
+
+model Booking {
+  id           String        @id @default(cuid())
+  expeditionId String
+  expedition   Expedition    @relation(fields: [expeditionId], references: [id])
+  package      PackageType
+  fullName     String
+  email        String
+  phone        String?
+  message      String?
+  status       BookingStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+
+  @@map("bookings")
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  fullName  String
+  email     String
+  phone     String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("inquiries")
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+}
+
+enum PackageType {
+  BASIC
+  PRO
+  EXTREME
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}

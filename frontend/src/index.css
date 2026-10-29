@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #0b2545;
+  --ridge: #1a5c9e;
+  --glacier: #7fb8c9;
+  --stone: #e8e2d6;
+  --rust: #c9472b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  color: #16213a;
+  background-color: #ffffff;
+}
+
+/* Display family applied broadly; uppercase + tracking reserved for true
+   section headings only (h1/h2 and .heading-mark), so card titles, names,
+   and modal titles use the same characterful face without shouting. */
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: 'Big Shoulders Display', 'Archivo Black', sans-serif;
+  font-weight: 700;
+}
+
+h1,
+h2,
+.heading-mark {
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.font-mono-label {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Visible focus rings for keyboard navigation (accessibility requirement) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--glacier);
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.container-page {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Signature topographic contour motif — used sparingly as a structural
+   device (hero backdrop, section dividers), never as generic decoration */
+.contour-bg {
+  background-image: url('/images/contour-pattern.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}

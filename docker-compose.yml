@@ -1,0 +1,66 @@
+# RidgeClimb Adventures — local/staging Docker Compose
+#
+# NOTE on VITE_API_URL: Vite inlines env vars at BUILD time, not runtime.
+# The frontend build below receives it as a build arg. If you change
+# VITE_API_URL, you must rebuild the frontend image (docker compose build
+# frontend) — restarting the container alone will not pick up the change.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ridgeclimb-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ridgeclimb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ridgeclimb}
+      POSTGRES_DB: ridgeclimb
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ridgeclimb']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ridgeclimb-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://ridgeclimb:${POSTGRES_PASSWORD:-ridgeclimb}@postgres:5432/ridgeclimb?schema=public
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-info@ridgeclimb.kg}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-RidgeClimb Adventures <info@ridgeclimb.kg>}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-access-secret}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-secret}
+    ports:
+      - '4000:4000'
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000/api}
+    container_name: ridgeclimb-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '5173:80'
+
+volumes:
+  postgres_data:
