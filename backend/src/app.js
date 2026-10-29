@@ -32,6 +32,15 @@ app.get('/api/health', (req, res) => {
   res.json({ success: true, status: 'ok', timestamp: new Date().toISOString() });
 });
 
+
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    version: 'v1'
+  });
+});
+
+
 // --- Routes ---
 app.use('/api/expeditions', expeditionRoutes);
 app.use('/api/bookings', bookingRoutes);
