@@ -36,7 +36,7 @@ app.get('/api/health', (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
-    version: 'v1'
+    version: 'v2'
   });
 });
 
